@@ -18,13 +18,32 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public List<ClubDto> getAllClubs() {
+    public List<com.hieupd.springmvcjpa.dto.ClubDto> getAllClubs() {
         List<Club> clubs = clubRepository.findAll();
         return clubs.stream().map(club -> mapToClubDto(club)).collect(Collectors.toList());
     }
 
+    @Override
+    public void save(Club club) {
+        clubRepository.save(club);
+    }
+
+    @Override
+    public ClubDto findClubById(Long id) {
+        Club club = clubRepository.findById(id).get();
+        return mapToClubDto(club);
+    }
+
+    @Override
+    public void updateClub(ClubDto clubDto) {
+        Club clubOld = clubRepository.findById(clubDto.getId()).get();
+        Club club = mapToClub(clubDto);
+        club.setCreatedAt(clubOld.getCreatedAt());
+        clubRepository.save(club);
+    }
+
     private ClubDto mapToClubDto(Club club) {
-        ClubDto clubDto = ClubDto.builder()
+        com.hieupd.springmvcjpa.dto.ClubDto clubDto = com.hieupd.springmvcjpa.dto.ClubDto.builder()
                 .id(club.getId())
                 .title(club.getTitle())
                 .content(club.getContent())
@@ -33,5 +52,16 @@ public class ClubServiceImpl implements ClubService {
                 .updatedAt(club.getUpdatedAt())
                 .build();
         return clubDto;
+    }
+
+    private Club mapToClub(ClubDto clubDto) {
+        Club club = Club.builder()
+                .id(clubDto.getId())
+                .title(clubDto.getTitle())
+                .content(clubDto.getContent())
+                .photoUrl(clubDto.getPhotoUrl())
+                .updatedAt(clubDto.getUpdatedAt())
+                .build();
+        return club;
     }
 }
