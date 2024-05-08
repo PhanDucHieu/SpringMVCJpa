@@ -9,27 +9,28 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "clubs")
-public class Club {
+@Table(name = "event")
+public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private String content;
+    private String name;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private String type;
     private String photoUrl;
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDateTime createAt;
     @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateAt;
 
-    @OneToMany(mappedBy = "clubId", cascade = CascadeType.REMOVE)
-    private Set<Event> events = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "club_id", nullable = false)
+    private Club clubId;
 }

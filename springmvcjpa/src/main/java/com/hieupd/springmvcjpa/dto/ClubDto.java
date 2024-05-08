@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Builder
 public class ClubDto {
     private Long id;
-
     @NotEmpty(message = "Club title should not be empty")
     private String title;
     @NotEmpty(message = "Content link should not be empty")

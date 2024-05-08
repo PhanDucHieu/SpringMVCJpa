@@ -7,16 +7,13 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 public class ClubController {
-    private ClubService clubService;
+    private final ClubService clubService;
 
     public ClubController(ClubService clubService) {
         this.clubService = clubService;
@@ -29,6 +26,13 @@ public class ClubController {
         return "clubs-list";
     };
 
+    @GetMapping("/clubs/{clubId}")
+    public String clubDetail(@PathVariable("clubId") Long id, Model model){
+        ClubDto clubDto = clubService.findClubById(id);
+        model.addAttribute("clubDto", clubDto);
+        return "club-detail";
+    }
+
     @GetMapping("/clubs/new")
     public String createClubForm(Model model) {
         Club club = new Club();
@@ -36,12 +40,27 @@ public class ClubController {
         return "clubs-create";
     }
 
+    @GetMapping("/clubs/{clubId}/delete")
+    public String deleteClub(@PathVariable("clubId") Long id){
+        clubService.deleteSingleClub(id);
+        return "redirect:/clubs";
+    }
+
+    @GetMapping("/clubs/search")
+    public String searchClubs(@RequestParam(value = "query") String query, Model model){
+        List<ClubDto> clubDtos = clubService.searchClub(query);
+        model.addAttribute("clubDtos", clubDtos);
+        model.addAttribute("query", query);
+        return "clubs-list";
+    }
+
     @PostMapping("/clubs/new")
-    public String saveClub(@Valid @ModelAttribute("club") Club club, BindingResult result) {
+    public String saveClub(@Valid @ModelAttribute("club") ClubDto clubDto,
+                           BindingResult result) {
         if (result.hasErrors()) {
             return "clubs-create";
         }
-        clubService.save(club);
+        clubService.save(clubDto);
         return "redirect:/clubs";
     }
 
@@ -54,10 +73,9 @@ public class ClubController {
 
     @PostMapping("/clubs/{clubId}/edit")
     public String updateClub(@PathVariable("clubId") Long id,
-                             @Valid @ModelAttribute("club") ClubDto clubDto,
+                             @Valid @ModelAttribute("clubDto") ClubDto clubDto,
                              BindingResult result){
         if (result.hasErrors()) {
-//            return "redirect:/clubs/{clubId}/edit";
             return "clubs-edit";
         }
         clubDto.setId(id);

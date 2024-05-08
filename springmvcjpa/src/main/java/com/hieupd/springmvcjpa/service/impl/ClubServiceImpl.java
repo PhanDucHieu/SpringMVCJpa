@@ -24,8 +24,8 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public void save(Club club) {
-        clubRepository.save(club);
+    public void save(ClubDto clubDto) {
+        clubRepository.save(mapToClub(clubDto));
     }
 
     @Override
@@ -40,6 +40,18 @@ public class ClubServiceImpl implements ClubService {
         Club club = mapToClub(clubDto);
         club.setCreatedAt(clubOld.getCreatedAt());
         clubRepository.save(club);
+    }
+
+    @Override
+    public void deleteSingleClub(Long id) {
+        clubRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ClubDto> searchClub(String query) {
+        List<Club> clubs = clubRepository.searchClub(query);
+        return clubs.stream().map(this::mapToClubDto).collect(Collectors.toList());
+//        return clubs.stream().map(club -> mapToClubDto(club)).collect(Collectors.toList());
     }
 
     private ClubDto mapToClubDto(Club club) {
