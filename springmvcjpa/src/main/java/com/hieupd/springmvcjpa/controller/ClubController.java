@@ -21,7 +21,7 @@ public class ClubController {
 
     @GetMapping("/clubs")
     public String listClubs(Model model) {
-        List<com.hieupd.springmvcjpa.dto.ClubDto> clubDtos = clubService.getAllClubs();
+        List<ClubDto> clubDtos = clubService.getAllClubs();
         model.addAttribute("clubDtos", clubDtos);
         return "clubs-list";
     };
