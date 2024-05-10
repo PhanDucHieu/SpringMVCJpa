@@ -5,6 +5,7 @@ import com.hieupd.springmvcjpa.models.Event;
 import com.hieupd.springmvcjpa.service.EventService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,9 +46,14 @@ public class EventController {
     @GetMapping("/events/{eventId}/edit")
     public String editEventForm(@PathVariable("eventId") Long id, Model model){
         EventDto eventDto = eventService.findEventById(id);
-        System.out.println(eventDto.getStartTime());
         model.addAttribute("eventDto", eventDto);
         return "events-edit";
+    }
+
+    @GetMapping("events/{eventId}/delete")
+    public String deleteEvent(@PathVariable("eventId") Long id){
+        eventService.deleteEvent(id);
+        return "redirect:/events";
     }
 
     @PostMapping("events/{clubId}/new")
@@ -58,9 +64,14 @@ public class EventController {
     }
 
     @PostMapping("/events/{eventId}/edit")
-    public String updateNewEvent(@PathVariable("eventId") Long id, @ModelAttribute("event") EventDto eventDto){
+    public String updateEvent(@PathVariable("eventId") Long id,
+                              @ModelAttribute("event") EventDto eventDto,
+                              BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return "events-edit";
+        }
         eventDto.setId(id);
-//        eventDto.setClubId();
+        eventDto.setClubId(eventService.findEventById(id).getClubId());
         eventService.updateEvent(eventDto);
         return "redirect:/events";
     }

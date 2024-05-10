@@ -1,6 +1,7 @@
 package com.hieupd.springmvcjpa.service.impl;
 
 import com.hieupd.springmvcjpa.dto.EventDto;
+import com.hieupd.springmvcjpa.mapper.EventMapper;
 import com.hieupd.springmvcjpa.models.Club;
 import com.hieupd.springmvcjpa.models.Event;
 import com.hieupd.springmvcjpa.repository.ClubRepository;
@@ -35,7 +36,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDto> getAllEvents() {
         List<Event> events = eventRepository.findAll();
-        return events.stream().map(event -> mapToEventDto(event)).collect(Collectors.toList());
+        return events.stream().map(EventMapper::mapToEventDto).collect(Collectors.toList());
+//        return events.stream().map(event -> mapToEventDto(event)).collect(Collectors.toList());
     }
 
     @Override
@@ -50,5 +52,10 @@ public class EventServiceImpl implements EventService {
         Event event = mapToEvent(eventDto);
         event.setCreateAt(eventOld.getCreateAt());
         eventRepository.save(event);
+    }
+
+    @Override
+    public void deleteEvent(Long id) {
+        eventRepository.deleteById(id);
     }
 }

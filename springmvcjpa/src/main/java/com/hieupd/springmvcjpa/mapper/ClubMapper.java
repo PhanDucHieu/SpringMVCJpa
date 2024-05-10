@@ -17,6 +17,7 @@ public class ClubMapper {
                 .createdAt(club.getCreatedAt())
                 .updatedAt(club.getUpdatedAt())
                 .events(club.getEvents().stream().map(EventMapper::mapToEventDto).collect(Collectors.toList()))
+//                .events(club.getEvents().stream().map(event -> mapToEventDto(event)).collect(Collectors.toList()))
                 .build();
         return clubDto;
     }
